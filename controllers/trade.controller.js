@@ -1,0 +1,68 @@
+const TradeModel = require('../models/trade.model');
+const User = require('../models/user.model');
+const cron = require('node-cron');
+exports.startTrade = async (req, res) => {
+  const { amount, percentage, userId, currency } = req.body;
+  console.log("RAAW BODY",req.body, "RAWW");
+
+  const total = (amount * percentage) / 100;
+  try {
+    const user = await User.findById(userId).populate('walletId').exec();
+    if (user && amount && percentage && userId && currency) {
+        const totalProfit = (amount * percentage)/100
+        const chunk = (totalProfit/100) * 10
+        const toNumberAmount = Number(amount)
+      const trade = new TradeModel({
+        userId,
+        amount: toNumberAmount,
+        profitPercentage: percentage,
+        startTime: new Date(),
+        currency,
+        totalProfit,
+        chunk
+      });
+      await trade.save()
+      res.send({status: 200, message:"Success"})
+    } else {
+      console.log('USER NOT FOUND');
+      res.send({status: 404, message:"User not found"})
+    }
+  } catch (e) {
+    console.log('ERRRORORORORO', e);
+  }
+};
+
+
+
+ cron.schedule('* * * * *', async () => {
+    console.log("CRON ")
+    const trades = await TradeModel.find();
+  if(trades.length > 0) {
+    trades.forEach(async trade => {
+    //   const elapsedTimeInHours = (Date.now() - trade.startTime) / (1000 * 60);
+    //   const profitToAdd = (trade.amount * trade.profitPercentage) / 100;
+    //   console.log([profitToAdd, elapsedTimeInHours])
+    //   const amountToAdd = profitToAdd / elapsedTimeInHours;
+
+
+    // __________________________________________
+        if(Number(trade.totalProfit ) > 0){
+
+            const slicePercentage = (Number(trade.totalProfit)/100) * 10
+            const user = await User.findById(trade?.userId).populate("walletId").exec();
+            if(user){
+                const userWallet = user.walletId
+                const concernedAmount = userWallet.currentBalance.find((item)=> item.name == trade.currency);
+                concernedAmount.amount = concernedAmount.amount + parseFloat(trade?.chunk)
+                const wallet = await userWallet.save()
+                trade.totalProfit = trade.totalProfit - parseFloat(trade?.chunk)
+                await trade.save()
+                console.log(wallet,"TRADE", trade)
+                
+            }
+        } else{ console.log("TRADE COMPLETED")}
+    });
+}else{
+    console.log("ALL TRADES COMPLETED")
+}
+  });

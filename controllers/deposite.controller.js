@@ -18,6 +18,7 @@ exports.getAllDeposit = async (req, res) => {
 
 exports.getAllById = async (req, res) => {
     try {
+        console.log(req.params)
         const response = await Deposit.find({ userId: req.params.userId })
         res.send({ status: 200, message: "Success", response })
     } catch (error) {
@@ -51,7 +52,7 @@ exports.createDeposit = async (req, res) => {
 exports.updateDeposit = async (req, res) => {
     try {
         const response = await Deposit.findByIdAndUpdate(req.body.depositId, 
-            { submitedToAccount: true }, 
+            { status: "Success" }, 
             { new: true }
             )
         res.send({ status: 200, response, message: "success" });
@@ -82,7 +83,7 @@ exports.approveDeposit = async (req, res) => {
                     userWallet.currentBalance = updatedCurrentBalance;
                     const newRec = await userWallet.save();
                     const depositRes = await Deposit.findByIdAndUpdate(req?.body?.depositId, 
-                        { submitedToAccount: true }, 
+                        { status: req.body?.success ? "Success" : "Rejected" }, 
                         { new: true }
                         )
                     // console.log("deposit", depositRes)

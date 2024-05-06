@@ -14,6 +14,7 @@ const fs = require('fs');
 const port = 5001;
 const localIp = "127.0.0.1"
 const cron = require('node-cron');
+const path = require('path')
 
 const port2 = 80;
 const localIp2 = "0.0.0.0"
@@ -58,6 +59,11 @@ app.use("/trade", tradeRoutes)
 // app.use("/test",upload.any("media"), (req, res)=>{
 //     console.log( "___________","REQ INN", req.body, "FILES,", req.files)
 // })
+app.use(express.static(path.join(__dirname, "web-build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "web-build/index.html"));
+});
 
 app.listen(port, (err)=>{
     db()

@@ -5,7 +5,7 @@ const deposit = new mongoose.Schema({
     username: {type: String, required:true},
     slipUrl: {type: String, required:true},
     amount: {type: Number, required:true},
-    submitedToAccount: {type: Boolean, default: false},
+    status: {type: String, default: "Pending"},
     ticketNumber: {type: String, required:true},
     currency: {type: String, required:true},
     role: {type: String, default: 'user'},

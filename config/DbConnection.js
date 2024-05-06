@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const localDb = "mongodb://127.0.0.1:27017/crypto_exchange"
+const localDb = "mongodb://cryptoAdmin:AtHp%262QE%5E4%24-(OP)@37.221.93.179:27017/"
 
  const db =()=>{ 
                 try {

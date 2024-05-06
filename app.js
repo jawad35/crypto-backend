@@ -65,7 +65,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "web-build/index.html"));
 });
 
-app.listen(port, (err)=>{
+app.listen(process.env.PORT, (err)=>{
     db()
     if(err)console.log(err);
     console.log("🚀 backend listening  on ", port, "🔥")

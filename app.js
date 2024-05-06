@@ -68,5 +68,5 @@ app.get("*", (req, res) => {
 app.listen(process.env.PORT, (err)=>{
     db()
     if(err)console.log(err);
-    console.log("🚀 backend listening  on ", port, "🔥")
+    console.log("🚀 backend listening  on ", process.env.PORT, "🔥")
 })
